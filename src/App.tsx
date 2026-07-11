@@ -1,9 +1,11 @@
 import "./App.css";
+import LoginForm from "./components/common/auth/LoginForm";
 
 function App() {
   return (
     <>
-      <h1>ola</h1>
+      <LoginForm />
+
     </>
   );
 }
