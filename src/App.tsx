@@ -1,6 +1,6 @@
-import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "./components/common/auth/ProtectedRoute";
-import Principal from "./pages/principal";
+import Principal from "./pages/Principal";
 import Agendamentos from "./pages/Agendamentos";
 import LoginForm from "./components/common/auth/LoginForm";
 import Garantias from "./pages/Garantias";

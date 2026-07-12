@@ -38,7 +38,7 @@ const appShell = () => {
             </div>
           </Link>
           {/* navegação dos itens */}
-          <nav className="hidden gap-1 md:flex">
+          <nav className="hidden gap-1 md:flex sm:flex">
             {nav.map((item) => {
               const active = pathname === item.to;
               const Icon = item.icon;
@@ -46,7 +46,7 @@ const appShell = () => {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-[12px] font-medium transition-colors sm:text-[10px] md:text-sm ${
                     active
                       ? "bg-[#D8EEFF] text-accent-foreground"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
