@@ -3,7 +3,7 @@ import {
   ShieldCheck,
   LayoutDashboard,
   Settings,
-  LogOut,
+  User,
 } from "lucide-react";
 import {
   Drawer,
@@ -27,6 +27,7 @@ const DrawerMenu = ({ abrir, setAbrir }: DrawerMenuProps) => {
     { to: "/agendamentos", label: "Agendamentos", icon: Calendar },
     { to: "/garantias", label: "Garantias", icon: ShieldCheck },
     { to: "/ordens-servico", label: "Ordens de Serviço", icon: Settings },
+    { to: "/perfil", label: "Perfil", icon: User },
   ];
   const { pathname } = useLocation();
   return (
@@ -40,7 +41,7 @@ const DrawerMenu = ({ abrir, setAbrir }: DrawerMenuProps) => {
           </DrawerClose>
           <DrawerHeader>
             <DrawerTitle>Menu</DrawerTitle>
-            <DrawerDescription>
+            <DrawerDescription className="mb-1.5">
               Selecione uma opção do menu para navegar.
             </DrawerDescription>
           </DrawerHeader>

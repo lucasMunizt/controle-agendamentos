@@ -4,7 +4,7 @@ import {
   ShieldCheck,
   LayoutDashboard,
   Settings,
-  LogOut,
+  User,
   Menu
 } from "lucide-react";
 import { useState } from "react";
@@ -16,11 +16,12 @@ const appShell = () => {
     { to: "/agendamentos", label: "Agendamentos", icon: Calendar },
     { to: "/garantias", label: "Garantias", icon: ShieldCheck },
     { to: "/ordens-servico", label: "Ordens de Serviço", icon: Settings },
+    { to: "/perfil", label: "Perfil", icon: User },
   ];
   const { pathname } = useLocation();
   const [abrir, setAbrir] = useState(false);
   return (
-    <div className="min-h-screen bg-[#F9FCFF]">
+    <div className="bg-[#F9FCFF]">
       {/* css do header para linha da bordar */}
       <header className="sticky top-0 z-30 border-b border-border/60 bg-[#F9FCFF] backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
@@ -33,7 +34,7 @@ const appShell = () => {
               {/* {(empresa.nome || "?").charAt(0).toUpperCase()} */}C
             </div>
             <div className="leading-tight">
-              <p className="text-sm font-medium text-foreground">
+              <p className="text-sm font-medium text-foreground sm:text-[16px]]">
                 {" "}
                 Clv asssitência técnica
               </p>
@@ -51,7 +52,7 @@ const appShell = () => {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-[12px] font-medium transition-colors sm:text-[10px] md:text-sm ${
+                  className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-[12px] font-medium transition-colors  ${
                     active
                       ? "bg-[#D8EEFF] text-accent-foreground"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
