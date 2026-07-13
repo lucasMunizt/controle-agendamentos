@@ -7,6 +7,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import CardsDados from "../components/common/cards-dados";
+import CardsDadosEspecificos from "../components/common/cards-dados-especificos";
 const Principal = () => {
   const dados = [
     { label: "Agendamentos ativos", valor: 10, icone: Calendar },
@@ -39,6 +40,9 @@ const Principal = () => {
               </div>
             );
           })}
+        </div>
+        <div className="mt-4">
+          <CardsDadosEspecificos />
         </div>
       </div>
     </div>
