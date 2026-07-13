@@ -5,7 +5,11 @@ import {
   LayoutDashboard,
   Settings,
   LogOut,
+  Menu
 } from "lucide-react";
+import { useState } from "react";
+import DrawerMenu from "./drawer-menu";
+import { Button } from "../ui/button";
 const appShell = () => {
   const nav = [
     { to: "/", label: "Painel", icon: LayoutDashboard },
@@ -14,6 +18,7 @@ const appShell = () => {
     { to: "/ordens-servico", label: "Ordens de Serviço", icon: Settings },
   ];
   const { pathname } = useLocation();
+  const [abrir, setAbrir] = useState(false);
   return (
     <div className="min-h-screen bg-[#F9FCFF]">
       {/* css do header para linha da bordar */}
@@ -58,7 +63,14 @@ const appShell = () => {
               );
             })}
           </nav>
+          {/* menu para responsividade */}
+            <div className="flex sm:hidden">
+              <Button className="bg-transparent " onClick={() => setAbrir(true)}>
+                <Menu color="black" />
+              </Button>
+            </div>
         </div>
+        <DrawerMenu abrir={abrir} setAbrir={setAbrir} />
       </header>
     </div>
   );
