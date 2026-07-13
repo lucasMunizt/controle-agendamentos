@@ -9,7 +9,7 @@ const cardsDados = ({ nome, valor, icone }: CardDadosProps) => {
   return (
     <div>
       <Card>
-        <CardContent className="pt-6">
+        <CardContent className="pt-2">
           <div className="flex items-center justify-between">
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               {nome}
