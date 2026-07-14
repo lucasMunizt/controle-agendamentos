@@ -1,20 +1,14 @@
 import AppShell from "../components/common/app-shell";
-import {
-  Calendar,
-  ShieldCheck,
-  TrendingUp,
-  Clock,
-  ArrowRight,
-} from "lucide-react";
+import { Calendar, ShieldCheck, TrendingUp, Clock } from "lucide-react";
 import CardsDados from "../components/common/cards-dados";
 import CardsDadosEspecificos from "../components/common/cards-dados-especificos";
 const Principal = () => {
-  const dados = [
-    { label: "Agendamentos ativos", valor: 10, icone: Calendar },
-    { label: "Garantias emitidas", valor: 10, icone: ShieldCheck },
-    { label: "Concluídos", valor: 10, icone: Clock },
-    { label: "Valor em garantias", valor: 1000.0, icone: TrendingUp },
-  ];
+  // const dados = [
+  //   { label: "Agendamentos ativos", valor: 10, icone: Calendar },
+  //   { label: "Garantias emitidas", valor: 10, icone: ShieldCheck },
+  //   // { label: "Concluídos", valor: 10, icone: Clock },
+  //   { label: "Valor em garantias", valor: 1000.0, icone: TrendingUp },
+  // ];
 
   const garantias = [
     {
@@ -32,7 +26,7 @@ const Principal = () => {
     {
       id: 2,
       os: "001235",
-      data: "2026-07-14",
+      data: "2026-07-13",
       nome_cliente: "João Carlos",
       aparelho: "Samsung Galaxy S21",
       pecas: "Conector de carga",
@@ -44,7 +38,7 @@ const Principal = () => {
     {
       id: 3,
       os: "001236",
-      data: "2026-07-15",
+      data: "2026-07-13",
       nome_cliente: "Ana Beatriz",
       aparelho: "Motorola Edge 30",
       pecas: "Tela frontal",
@@ -138,6 +132,78 @@ const Principal = () => {
       na_garantia: true,
     },
   ];
+  // para formatar o valor em moeda brasileira
+  const formatarMoeda = (valor: number) => {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(valor);
+  };
+
+  let totalGarantias = 0;
+  let valorTotalGarantias = 0;
+
+  // total de atendimentos agendados
+  const atendimentosAtivos = 10;
+  // total de atendimentos concluídos
+  let atendimentosConcluidos = 0;
+
+  const mesAtual = new Date().getMonth();
+  const anoAtual = new Date().getFullYear();
+  const diaAtual = new Date().toLocaleDateString("sv-SE");
+  // filtro mes
+  const garantiasDoMes = garantias.filter((item) => {
+    const dataGarantias = new Date(item.data);
+
+    return (
+      dataGarantias.getMonth() === mesAtual &&
+      dataGarantias.getFullYear() === anoAtual
+    );
+  });
+
+  //filtro dia para saber quantos atendimentos foram feitos naquele dia
+  const garantiasGeradasNoDia = garantias.filter((item) => {
+    return item.data === diaAtual;
+  });
+  atendimentosConcluidos = garantiasGeradasNoDia.length;
+
+  // console.log("garantias do dia", garantiasGeradasNoDia);
+
+  // total de garantias
+  totalGarantias = garantiasDoMes.length;
+  //soma de todas as garantias do mes
+  valorTotalGarantias = garantiasDoMes.reduce(
+    (total, item) => item.valor + total,
+    0,
+  );
+  console.log(atendimentosConcluidos);
+
+  const CardResume = [
+    {
+      nome: "Atendimentos ativos",
+      valor: atendimentosAtivos,
+      icone: Calendar,
+      descricao: "Agendamentos em aberto",
+    },
+    {
+      nome: "Garantias emitidas",
+      valor: totalGarantias,
+      icone: ShieldCheck,
+      descricao: "Garantias cadastradas",
+    },
+    {
+      nome: "Concluídos",
+      valor: atendimentosConcluidos,
+      icone: Clock,
+      descricao: "Serviços finalizados",
+    },
+    {
+      nome: "Valor em garantias",
+      valor: formatarMoeda(valorTotalGarantias),
+      icone: TrendingUp,
+      descricao: "Soma total das garantias",
+    },
+  ];
   return (
     <div className="bg-[#F9FCFF]">
       <header className="bg-blue-600 mb-0">
@@ -151,12 +217,12 @@ const Principal = () => {
           </p>
         </div>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4 mt-4 ">
-          {dados.map((item) => {
+          {CardResume.map((item) => {
             const Icon = item.icone;
             return (
-              <div key={item.label} className=" ">
+              <div key={item.nome} className=" ">
                 <CardsDados
-                  nome={item.label}
+                  nome={item.nome}
                   valor={item.valor.toString()}
                   icone={<Icon className="h-4 w-4 text-muted-foreground" />}
                 />
@@ -169,11 +235,13 @@ const Principal = () => {
             titulo="Próximos agendamentos"
             paragrafo="Nenhum agendamento futuro."
             dados={garantias}
+            rota="/agendamentos"
           />
           <CardsDadosEspecificos
             titulo="Últimas garantias"
             paragrafo="Nenhuma garantia registrada."
             dados={garantias}
+            rota="/garantias"
           />
         </div>
       </div>

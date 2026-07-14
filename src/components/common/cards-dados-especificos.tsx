@@ -14,22 +14,25 @@ interface CardsDadosEspecificosProps {
   titulo: string;
   paragrafo: string;
   dados: DadosItem[];
+  rota: string;
 }
 const cardsDadosEspecificos = ({
   titulo,
   paragrafo,
   dados,
+  rota,
 }: CardsDadosEspecificosProps) => {
+  function formatarData(data: string) {
+    const [ano, mes, dia] = data.split("-");
+    return `${dia}-${mes}-${ano}`;
+  }
   return (
     <div>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base">{titulo}</CardTitle>
           <Button className="no-underline" variant="ghost" size="sm">
-            <Link
-              to="/agendamentos"
-              className="flex items-center gap-1 no-underline"
-            >
+            <Link to={rota} className="flex items-center gap-1 no-underline">
               Ver todos <ArrowRight className="ml-1" />
             </Link>
           </Button>
@@ -53,7 +56,9 @@ const cardsDadosEspecificos = ({
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium">{item.data}</p>
+                    <p className="text-sm font-medium">
+                      {formatarData(item.data)}
+                    </p>
                     <p className="text-xs text-muted-foreground">{item.hora}</p>
                   </div>
                 </li>
