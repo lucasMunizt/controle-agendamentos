@@ -16,7 +16,7 @@ const cardsDados = ({ nome, valor, icone }: CardDadosProps) => {
             </p>
             {icone}
           </div>
-            <p className="mt-2 text-2xl font-semibold">{valor}</p>
+            <p className="mt-2 text-[20px] font-semibold">{valor}</p>
         </CardContent>
       </Card>
     </div>
