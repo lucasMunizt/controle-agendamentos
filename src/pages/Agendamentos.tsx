@@ -1,3 +1,4 @@
+import { Plus } from "lucide-react";
 import AppShell from "../components/common/app-shell";
 import { Button } from "../components/ui/button";
 
@@ -16,9 +17,12 @@ const Agendamentos = () => {
             </p>
           </div>
           <div>
-            <Button className="bg-[#0072DA] mt-2 sm:mt-0" size={"lg"}>
+            <Button
+              className="bg-[#0072DA] flex gap-2 mt-2 sm:mt-0 hover:bg-[#1684ec]"
+              size={"lg"}
+            >
               {" "}
-              + Novo agendamento
+              <Plus className="mr-2 h-4 w-4" /> Novo agendamento
             </Button>
           </div>
         </div>
