@@ -2,13 +2,11 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
 import { User, Phone, Wrench, Calendar, Clock, FileText } from "lucide-react";
 import { Separator } from "../ui/separator";
-import { Button } from "../ui/button";
 import { Row } from "./row";
 
 type Agendamento = {
