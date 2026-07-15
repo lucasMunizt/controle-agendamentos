@@ -26,15 +26,19 @@ interface CardsDadosEspecificosProps {
   titulo: string;
   paragrafo: string;
   dados: DadosItem[];
+  valorBusca?: string;
   rota: string;
   abrir?: boolean;
   setAbrir?: (abrir: boolean) => void;
+  opcao: boolean;
 }
 const cardsDadosEspecificos = ({
   titulo,
   paragrafo,
   dados,
   rota,
+  valorBusca,
+  opcao,
 }: CardsDadosEspecificosProps) => {
   function formatarData(data: string) {
     const [ano, mes, dia] = data.split("-");
@@ -43,25 +47,49 @@ const cardsDadosEspecificos = ({
   const [agendamentoSelecionado, setAgendamentoSelecionado] =
     useState<Agendamento | null>(null);
   const [abrir, setAbrir] = useState(false);
+  console.log("teste query ", valorBusca);
+  // função para normalizar o texto, limpando os espaços, deixando em caixa baixo e etc
+  const normalizeTexto = (valor: string) => {
+    return valor
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  };
+  // utilizando a função no campo de busca
+  const busca = normalizeTexto(valorBusca ?? "");
+
+  // filtrando as informações
+  const dadosFiltrados = dados.filter((item) => {
+    if (!busca) return true;
+
+    return (
+      normalizeTexto(item.nome_cliente).includes(busca) ||
+      normalizeTexto(item.aparelho).includes(busca) ||
+      item.data.includes(busca)
+    );
+  });
+  const dadosExibidos = busca ? dadosFiltrados : dados;
   return (
     <div>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base">{titulo}</CardTitle>
-          <Button className="no-underline" variant="ghost" size="sm">
-            <Link to={rota} className="flex items-center gap-1 no-underline">
-              Ver todos <ArrowRight className="ml-1" />
-            </Link>
-          </Button>
+          {opcao && (
+            <Button className="no-underline" variant="ghost" size="sm">
+              <Link to={rota} className="flex items-center gap-1 no-underline">
+                Ver todos <ArrowRight className="ml-1" />
+              </Link>
+            </Button>
+          )}
         </CardHeader>
         <CardContent>
-          {dados.length === 0 ? (
+          {dadosExibidos.length === 0 ? (
             <p className="py-8 text-center text-sm text-muted-foreground">
               {paragrafo}
             </p>
           ) : (
             <ul className="divide-y divide-border">
-              {dados.map((item) => (
+              {dadosExibidos.map((item) => (
                 <li key={item.id}>
                   <button
                     type="button"

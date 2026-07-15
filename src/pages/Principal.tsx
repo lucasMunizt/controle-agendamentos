@@ -16,7 +16,7 @@ const Principal = () => {
       id: 1,
       os: "001234",
       data: "2026-07-13",
-      hora:"14:40",
+      hora: "14:40",
       nome_cliente: "Maria Oliveira",
       aparelho: "iPhone 12 Pro",
       pecas: "Tela original + bateria",
@@ -211,7 +211,7 @@ const Principal = () => {
       <header className="bg-blue-600 mb-0">
         <AppShell />
       </header>
-      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
         <div className="">
           <h1 className="text-4xl font-semibold mb-1">Painel</h1>
           <p className="text-muted-foreground">
@@ -240,12 +240,14 @@ const Principal = () => {
             rota="/agendamentos"
             abrir={abrir}
             setAbrir={setAbrir}
+            opcao={true}
           />
           <CardsDadosEspecificos
             titulo="Últimas garantias"
             paragrafo="Nenhuma garantia registrada."
             dados={garantias}
             rota="/garantias"
+            opcao={true}
           />
         </div>
       </div>
