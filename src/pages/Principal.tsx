@@ -2,6 +2,7 @@ import AppShell from "../components/common/app-shell";
 import { Calendar, ShieldCheck, TrendingUp, Clock } from "lucide-react";
 import CardsDados from "../components/common/cards-dados";
 import CardsDadosEspecificos from "../components/common/cards-dados-especificos";
+import { useState } from "react";
 const Principal = () => {
   // const dados = [
   //   { label: "Agendamentos ativos", valor: 10, icone: Calendar },
@@ -15,6 +16,7 @@ const Principal = () => {
       id: 1,
       os: "001234",
       data: "2026-07-13",
+      hora:"14:40",
       nome_cliente: "Maria Oliveira",
       aparelho: "iPhone 12 Pro",
       pecas: "Tela original + bateria",
@@ -139,7 +141,7 @@ const Principal = () => {
       currency: "BRL",
     }).format(valor);
   };
-
+  const [abrir, setAbrir] = useState(false);
   let totalGarantias = 0;
   let valorTotalGarantias = 0;
 
@@ -236,6 +238,8 @@ const Principal = () => {
             paragrafo="Nenhum agendamento futuro."
             dados={garantias}
             rota="/agendamentos"
+            abrir={abrir}
+            setAbrir={setAbrir}
           />
           <CardsDadosEspecificos
             titulo="Últimas garantias"
