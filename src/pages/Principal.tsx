@@ -2,158 +2,47 @@ import AppShell from "../components/common/app-shell";
 import { Calendar, ShieldCheck, TrendingUp, Clock } from "lucide-react";
 import CardsDados from "../components/common/cards-dados";
 import CardsDadosEspecificos from "../components/common/cards-dados-especificos";
-import { useState } from "react";
-const Principal = () => {
-  // const dados = [
-  //   { label: "Agendamentos ativos", valor: 10, icone: Calendar },
-  //   { label: "Garantias emitidas", valor: 10, icone: ShieldCheck },
-  //   // { label: "Concluídos", valor: 10, icone: Clock },
-  //   { label: "Valor em garantias", valor: 1000.0, icone: TrendingUp },
-  // ];
+import { useEffect, useState } from "react";
+import { getAgendamentos, getGarantias } from "../service/GetAgendamentos";
+import { FormatarData, FormatarMoeda } from "../lib/format-date-hours";
+import type { agendamentosTypes, garantiasTypes } from "../lib/storage";
+import ModalDados from "../components/common/modal-dados";
+import ModalGarantia from "../components/common/modal-garantia";
 
-  const garantias = [
-    {
-      id: 1,
-      os: "001234",
-      data: "2026-07-13",
-      hora: "14:40",
-      nome_cliente: "Maria Oliveira",
-      aparelho: "iPhone 12 Pro",
-      pecas: "Tela original + bateria",
-      valor: 850.0,
-      tipo_garantia: "90 dias",
-      validade_ate: "2026-10-10",
-      na_garantia: true,
-    },
-    {
-      id: 2,
-      os: "001235",
-      data: "2026-07-13",
-      nome_cliente: "João Carlos",
-      aparelho: "Samsung Galaxy S21",
-      pecas: "Conector de carga",
-      valor: 180.0,
-      tipo_garantia: "90 dias",
-      validade_ate: "2026-10-12",
-      na_garantia: true,
-    },
-    {
-      id: 3,
-      os: "001236",
-      data: "2026-07-13",
-      nome_cliente: "Ana Beatriz",
-      aparelho: "Motorola Edge 30",
-      pecas: "Tela frontal",
-      valor: 420.0,
-      tipo_garantia: "90 dias",
-      validade_ate: "2026-10-13",
-      na_garantia: true,
-    },
-    {
-      id: 4,
-      os: "001237",
-      data: "2026-07-16",
-      nome_cliente: "Pedro Henrique",
-      aparelho: "iPhone 11",
-      pecas: "Bateria",
-      valor: 280.0,
-      tipo_garantia: "90 dias",
-      validade_ate: "2026-10-14",
-      na_garantia: true,
-    },
-    {
-      id: 5,
-      os: "001238",
-      data: "2026-07-17",
-      nome_cliente: "Camila Santos",
-      aparelho: "Xiaomi Redmi Note 12",
-      pecas: "Tela + película",
-      valor: 350.0,
-      tipo_garantia: "90 dias",
-      validade_ate: "2026-10-15",
-      na_garantia: true,
-    },
-    {
-      id: 6,
-      os: "001239",
-      data: "2026-07-18",
-      nome_cliente: "Lucas Almeida",
-      aparelho: "Samsung Galaxy A54",
-      pecas: "Tampa traseira",
-      valor: 160.0,
-      tipo_garantia: "90 dias",
-      validade_ate: "2026-10-16",
-      na_garantia: true,
-    },
-    {
-      id: 7,
-      os: "001240",
-      data: "2026-07-19",
-      nome_cliente: "Fernanda Lima",
-      aparelho: "iPhone XR",
-      pecas: "Tela compatível",
-      valor: 390.0,
-      tipo_garantia: "90 dias",
-      validade_ate: "2026-10-17",
-      na_garantia: true,
-    },
-    {
-      id: 8,
-      os: "001241",
-      data: "2026-07-20",
-      nome_cliente: "Rafael Costa",
-      aparelho: "Motorola G60",
-      pecas: "Conector de carga + limpeza interna",
-      valor: 220.0,
-      tipo_garantia: "90 dias",
-      validade_ate: "2026-10-18",
-      na_garantia: true,
-    },
-    {
-      id: 9,
-      os: "001242",
-      data: "2026-07-21",
-      nome_cliente: "Patrícia Gomes",
-      aparelho: "Samsung Galaxy M52",
-      pecas: "Bateria + tampa traseira",
-      valor: 310.0,
-      tipo_garantia: "90 dias",
-      validade_ate: "2026-10-19",
-      na_garantia: true,
-    },
-    {
-      id: 10,
-      os: "001243",
-      data: "2026-07-22",
-      nome_cliente: "Bruno Martins",
-      aparelho: "iPhone 13",
-      pecas: "Tela original",
-      valor: 950.0,
-      tipo_garantia: "90 dias",
-      validade_ate: "2026-10-20",
-      na_garantia: true,
-    },
-  ];
-  // para formatar o valor em moeda brasileira
-  const formatarMoeda = (valor: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(valor);
-  };
-  const [abrir, setAbrir] = useState(false);
+const Principal = () => {
+  const [garantias, setGarantias] = useState<garantiasTypes[]>([]);
+  const [agendamentos, setAgendamentos] = useState<agendamentosTypes[]>([]);
   let totalGarantias = 0;
   let valorTotalGarantias = 0;
-
-  // total de atendimentos agendados
-  const atendimentosAtivos = 10;
-  // total de atendimentos concluídos
   let atendimentosConcluidos = 0;
-
+  const dataAtual = new Date();
   const mesAtual = new Date().getMonth();
   const anoAtual = new Date().getFullYear();
   const diaAtual = new Date().toLocaleDateString("sv-SE");
-  // filtro mes
+  useEffect(() => {
+    async function fetchAgendamentos() {
+      try {
+        const data = await getAgendamentos();
+        // setGarantias(Array.isArray(data) ? data : []);
+        setAgendamentos(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Erro ao mostrar os dados");
+      }
+    }
+    async function fetchGarantias() {
+      try {
+        const data = await getGarantias();
+        setGarantias(Array.isArray(data) ? data : []);
+        // setAgendamentos(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Erro ao mostrar os dados");
+      }
+    }
+    fetchAgendamentos();
+    fetchGarantias();
+  }, []);
+
+  // filtro mes, comprado mês e ano
   const garantiasDoMes = garantias.filter((item) => {
     const dataGarantias = new Date(item.data);
 
@@ -165,20 +54,27 @@ const Principal = () => {
 
   //filtro dia para saber quantos atendimentos foram feitos naquele dia
   const garantiasGeradasNoDia = garantias.filter((item) => {
-    return item.data === diaAtual;
+    return FormatarData(item.data) === FormatarData(diaAtual);
   });
+  //Quantidade de serviços concluidos apartir de quandas garantias geradas no dia
   atendimentosConcluidos = garantiasGeradasNoDia.length;
 
-  // console.log("garantias do dia", garantiasGeradasNoDia);
+  // filtro para saber quandos agendamentos ativos no dia
+  const filtroAgendamentos = agendamentos.filter((item) => {
+    const data = new Date(item.data_inicio);
+    return data >= dataAtual;
+  });
+
+  // total de atendimentos agendados
+  const atendimentosAtivos = filtroAgendamentos.length;
 
   // total de garantias
   totalGarantias = garantiasDoMes.length;
-  //soma de todas as garantias do mes
+  // //soma de todas as garantias do mes
   valorTotalGarantias = garantiasDoMes.reduce(
     (total, item) => item.valor + total,
     0,
   );
-  console.log(atendimentosConcluidos);
 
   const CardResume = [
     {
@@ -201,11 +97,12 @@ const Principal = () => {
     },
     {
       nome: "Valor em garantias",
-      valor: formatarMoeda(valorTotalGarantias),
+      valor: FormatarMoeda(valorTotalGarantias),
       icone: TrendingUp,
       descricao: "Soma total das garantias",
     },
   ];
+
   return (
     <div className="bg-[#F9FCFF]">
       <header className="bg-blue-600 mb-0">
@@ -233,21 +130,42 @@ const Principal = () => {
           })}
         </div>
         <div className="mt-4 grid *:grid-cols-1 gap-4 md:grid-cols-2">
-          <CardsDadosEspecificos
+          <CardsDadosEspecificos<agendamentosTypes>
             titulo="Próximos agendamentos"
             paragrafo="Nenhum agendamento futuro."
-            dados={garantias}
+            dados={filtroAgendamentos}
             rota="/agendamentos"
-            abrir={abrir}
-            setAbrir={setAbrir}
             opcao={true}
+            limite={5}
+            getId={(item) => String(item.id)}
+            getTitulo={(item) => item.titulo}
+            getDescricao={(item) => item.descricao}
+            getData={(item) => item.data_inicio}
+            renderModal={(item, abrir, setAbrir) => (
+              <ModalDados
+                abrir={abrir}
+                setAbrir={setAbrir}
+                agendamento={item}
+              />
+            )}
           />
-          <CardsDadosEspecificos
+          <CardsDadosEspecificos<garantiasTypes>
             titulo="Últimas garantias"
             paragrafo="Nenhuma garantia registrada."
             dados={garantias}
             rota="/garantias"
             opcao={true}
+            getId={(item) => String(item.id)}
+            getTitulo={(item) => item.nome /* ajuste ao campo real */}
+            getDescricao={(item) => FormatarMoeda(item.valor)}
+            getData={(item) => item.data}
+            renderModal={(item, abrir, setAbrir) => (
+              <ModalGarantia
+                abrir={abrir}
+                setAbrir={setAbrir}
+                garantia={item}
+              />
+            )}
           />
         </div>
       </div>
