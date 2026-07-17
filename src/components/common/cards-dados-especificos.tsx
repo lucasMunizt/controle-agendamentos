@@ -3,72 +3,66 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import ModalDados from "./modal-dados";
-type Agendamento = {
-  id: string;
-  cliente: string;
-  telefone: string;
-  servico: string;
-  data: string;
-  hora: string;
-  observacoes?: string;
-  status: "agendado" | "concluido" | "cancelado";
-  createdAt: string;
-};
-interface DadosItem {
-  id: number;
-  nome_cliente: string;
-  aparelho: string;
-  data: string;
-  hora?: string;
-}
-interface CardsDadosEspecificosProps {
+import { FormatarData, FormateHoras } from "../../lib/format-date-hours";
+
+interface CardsDadosEspecificosProps<T> {
   titulo: string;
   paragrafo: string;
-  dados: DadosItem[];
+  dados: T[];
   valorBusca?: string;
   rota: string;
-  abrir?: boolean;
-  setAbrir?: (abrir: boolean) => void;
   opcao: boolean;
+  limite?: number;
+
+  // acessores: cada uso define como extrair os dados do seu tipo
+  getId: (item: T) => string;
+  getTitulo: (item: T) => string;
+  getDescricao: (item: T) => string;
+  getData: (item: T) => string; // usada pra ordenar e formatar
+  getCamposBusca?: (item: T) => string[]; // campos extras pra busca, ex: [titulo, descricao]
+
+  // renderiza o modal específico daquele uso (agendamento ou garantia)
+  renderModal: (item: T | null, abrir: boolean, setAbrir: (v: boolean) => void) => React.ReactNode;
 }
-const cardsDadosEspecificos = ({
+
+function CardsDadosEspecificos<T>({
   titulo,
   paragrafo,
   dados,
   rota,
   valorBusca,
   opcao,
-}: CardsDadosEspecificosProps) => {
-  function formatarData(data: string) {
-    const [ano, mes, dia] = data.split("-");
-    return `${dia}-${mes}-${ano}`;
-  }
-  const [agendamentoSelecionado, setAgendamentoSelecionado] =
-    useState<Agendamento | null>(null);
+  limite,
+  getId,
+  getTitulo,
+  getDescricao,
+  getData,
+  getCamposBusca,
+  renderModal,
+}: CardsDadosEspecificosProps<T>) {
+  const [itemSelecionado, setItemSelecionado] = useState<T | null>(null);
   const [abrir, setAbrir] = useState(false);
-  console.log("teste query ", valorBusca);
-  // função para normalizar o texto, limpando os espaços, deixando em caixa baixo e etc
-  const normalizeTexto = (valor: string) => {
-    return valor
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
-  };
-  // utilizando a função no campo de busca
+
+  const normalizeTexto = (valor: string) =>
+    valor.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
   const busca = normalizeTexto(valorBusca ?? "");
 
-  // filtrando as informações
   const dadosFiltrados = dados.filter((item) => {
     if (!busca) return true;
-
-    return (
-      normalizeTexto(item.nome_cliente).includes(busca) ||
-      normalizeTexto(item.aparelho).includes(busca) ||
-      item.data.includes(busca)
-    );
+    const campos = getCamposBusca
+      ? getCamposBusca(item)
+      : [getTitulo(item), getDescricao(item)];
+    return campos.some((campo) => normalizeTexto(campo ?? "").includes(busca));
   });
-  const dadosExibidos = busca ? dadosFiltrados : dados;
+
+  const dadosExibidos = [...(busca ? dadosFiltrados : dados)].sort(
+    (a, b) => new Date(getData(b)).getTime() - new Date(getData(a)).getTime(),
+  );
+
+  const dadosParaMostrar =
+    limite !== undefined ? dadosExibidos.slice(0, limite) : dadosExibidos;
+
   return (
     <div>
       <Card>
@@ -83,50 +77,37 @@ const cardsDadosEspecificos = ({
           )}
         </CardHeader>
         <CardContent>
-          {dadosExibidos.length === 0 ? (
+          {dadosParaMostrar.length === 0 ? (
             <p className="py-8 text-center text-sm text-muted-foreground">
               {paragrafo}
             </p>
           ) : (
             <ul className="divide-y divide-border">
-              {dadosExibidos.map((item) => (
-                <li key={item.id}>
+              {dadosParaMostrar.map((item) => (
+                <li key={getId(item)}>
                   <button
                     type="button"
                     onClick={() => {
-                      setAgendamentoSelecionado({
-                        id: String(item.id),
-                        cliente: item.nome_cliente,
-                        telefone: "",
-                        servico: item.aparelho,
-                        data: item.data,
-                        hora: item.hora ?? "",
-                        observacoes: "",
-                        status: "agendado",
-                        createdAt: new Date().toISOString(),
-                      });
+                      setItemSelecionado(item);
                       setAbrir(true);
                     }}
                     className="flex w-full items-center justify-between py-3 text-left hover:bg-muted/50"
                   >
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-black">
-                        {item.nome_cliente}
+                        {getTitulo(item)}
                       </p>
-
                       <p className="truncate text-xs text-muted-foreground">
-                        {item.aparelho}
+                        {getDescricao(item)}
                       </p>
                     </div>
-
                     <div className="ml-4 shrink-0 text-right">
                       <p className="text-sm font-medium text-black">
-                        {formatarData(item.data)}
+                        {FormatarData(getData(item))}
                       </p>
-
-                      {item.hora && (
+                      {getData(item) && (
                         <p className="text-xs text-muted-foreground">
-                          {item.hora}
+                          {FormateHoras(getData(item))}
                         </p>
                       )}
                     </div>
@@ -135,15 +116,11 @@ const cardsDadosEspecificos = ({
               ))}
             </ul>
           )}
-          <ModalDados
-            abrir={abrir}
-            setAbrir={setAbrir}
-            agendamento={agendamentoSelecionado}
-          />
+          {renderModal(itemSelecionado, abrir, setAbrir)}
         </CardContent>
       </Card>
     </div>
   );
-};
+}
 
-export default cardsDadosEspecificos;
+export default CardsDadosEspecificos;
